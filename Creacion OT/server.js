@@ -3,7 +3,7 @@ const otRoutes = require('./src/routes/otRoutes');
 
 const app = express();
 
-// Middleware para entender JSON (Tu equipo no tenía esto, es vital)
+// Middleware para entender JSON
 app.use(express.json());
 
 // Rutas
@@ -13,4 +13,5 @@ app.use('/api/ot', otRoutes);
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
+
 });
