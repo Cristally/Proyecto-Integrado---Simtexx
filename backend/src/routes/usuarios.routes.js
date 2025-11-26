@@ -3,9 +3,44 @@ import { pool } from "../db.js";
 
 const router = Router();
 
-router.get("/", async (req, res) => {
-  const result = await pool.query("SELECT nombre, correo, fecha_actualizacion FROM usuarios");
-  res.json(result.rows);
+// LOGIN DESDE BD
+router.post("/login", async (req, res) => {
+  const { correo, password_hash } = req.body;
+
+  try {
+    // 1. Validar usuario por email
+    const result = await pool.query(
+      "SELECT * FROM usuarios WHERE correo = $1",
+      [correo]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: "Usuario no encontrado" });
+    }
+
+    const user = result.rows[0];
+
+    // 2. Comparar contraseña (versión simple para desarrollo)
+    if (password_hash !== user.password_hash) {
+      return res.status(401).json({ error: "Contraseña incorrecta" });
+    }
+
+    // 3. Responder datos al frontend
+    res.json({
+      message: "Login exitoso",
+      user: {
+        id: user.id,
+        nombre: user.nombre,
+        correo: user.correo,
+        rol_id: user.rol_id
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error en el servidor" });
+  }
 });
 
 export default router;
+
