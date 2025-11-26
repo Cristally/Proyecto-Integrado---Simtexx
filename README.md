@@ -7,6 +7,8 @@ para iniciar proyecto =>
 
 git clone ...
 
+
+
 (2) Crear su propio .env en backend: 
 
 PORT=4000
@@ -14,7 +16,10 @@ PORT=4000
 DATA_BASEURL= esto sera enviado por wsp
 
 
+
+
 (3) Instalar dependencias y correr backend + frontend
+
 Backend:
 
 
@@ -33,6 +38,8 @@ cd frontend
 npm install
 
 npm run dev
+
+
 
 
 
