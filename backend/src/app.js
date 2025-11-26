@@ -6,8 +6,20 @@ import usuariosRoutes from "./routes/usuarios.routes.js";
 import otRoutes from "./routes/ot.routes.js";
 import comentariosRoutes from "./routes/comentarios.routes.js";
 import auditoriasRoutes from "./routes/auditorias.routes.js";
+import { fileURLToPath } from "url";
+import path from "path";
 
 const app = express();
+// crear constante de conexion e importacion
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Servir el build del frontend
+app.use(express.static(path.join(__dirname, "frontend/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend/dist/index.html"));
+  });
 
 app.use(cors());
 app.use(express.json());
