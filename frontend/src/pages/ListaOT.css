@@ -101,6 +101,27 @@
 }
 
 
+.btn-eliminar {
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: white;
+  
+ 
+  border: none;        
+  font-family: inherit; 
+  font-size: 16px;     
+  cursor: pointer;
+  
+ 
+  margin-left: 10px;
+  background-color: #c62828; 
+  transition: background 0.2s ease;
+}
+
+.btn-eliminar:hover {
+  background-color: #b71c1c; 
+}
+
 .panel-registros {
   background: white;
   padding: 20px;
@@ -127,3 +148,4 @@
 .pendiente { border-left: 6px solid #3A61A8; }
 .proceso { border-left: 6px solid #61A83A; }
 .finalizada { border-left: 6px solid red; }
+
