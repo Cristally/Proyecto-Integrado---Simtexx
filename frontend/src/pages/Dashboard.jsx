@@ -79,12 +79,12 @@ const Dashboard = () => {
       )}
 
       {ots.map((ot) => (
-        <tr key={ot.id}>
-          <td>{ot.id}</td>
+        <tr key={ot.id_ot}>
+          <td>{ot.codigo}</td>
           <td>{ot.estado}</td>
-          <td>{ot.fechaInicio || "N/A"}</td>
-          <td>{ot.fechaFin || "N/A"}</td>
-          <td>{ot.responsable}</td>
+          <td>{ot.fecha_inicio_contrato?.slice(0, 10) || "N/A"}</td>
+          <td>{ot.fecha_fin_contrato?.slice(0, 10) || "N/A"}</td>
+          <td>{ot.responsable_nombre}</td>
         </tr>
       ))}
       </tbody>
@@ -100,4 +100,5 @@ const Dashboard = () => {
 
 
 export default Dashboard;
+
 
