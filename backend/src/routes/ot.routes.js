@@ -109,7 +109,8 @@ router.put("/:id", async (req, res) => {
        SET titulo = $1,
            descripcion = $2,
            fecha_inicio_contrato = $3,
-           fecha_fin_contrato = $4
+           fecha_fin_contrato = $4,
+           fecha_actualizacion = NOW()
        WHERE id_ot = $5
        RETURNING *`,
       [titulo, descripcion, fecha_inicio_contrato, fecha_fin_contrato, id]
@@ -119,7 +120,10 @@ router.put("/:id", async (req, res) => {
       return res.status(404).json({ error: "OT no encontrada" });
     }
 
-    res.json(result.rows[0]);
+    res.json({ 
+        message: "OT modificada con éxito",
+        ot: result.rows[0] 
+    });
   } catch (error) {
     console.error("Error al modificar la OT:", error);
     res.status(500).json({ error: "Error al modificar la OT" });
@@ -151,13 +155,12 @@ router.patch("/:id/estado", async (req, res) => {
 });
 
 /* ============================
-    ELIMINAR OT 
+     ELIMINAR OT 
 =============================== */
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    
     const result = await pool.query(
       "UPDATE ot SET activo = false, fecha_actualizacion = NOW() WHERE id_ot = $1 RETURNING *",
       [id]
@@ -175,4 +178,3 @@ router.delete("/:id", async (req, res) => {
 });
 
 export default router;
-
