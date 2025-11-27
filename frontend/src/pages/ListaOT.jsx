@@ -12,7 +12,7 @@ export default function ListaOT() {
     setOts(getOTs());
   }, []);
   const { id } = useParams();
-  const usuario = JSON.parse(localStorage.getItem("usuarioActual"));
+  const usuario = JSON.parse(localStorage.getItem("usuarioActual")); //usuario
 
  
   const handleDelete = async (idOT) => {
@@ -43,7 +43,7 @@ export default function ListaOT() {
 
 
         <div className="user-info-box">
-          <div>Usuario: <b>{usuario?.nombre}</b> &nbsp;&nbsp; Rol: <b>{usuario?.rol}</b></div>
+          <div>Usuario: <b>{usuario?.nombre}</b> &nbsp;&nbsp; Rol: <b>{usuario?.rol_nombre}</b></div>
         </div>
 
         
@@ -88,9 +88,10 @@ export default function ListaOT() {
 
               <tbody>
                 {ots.map((ot) => (
-                  <tr key={ot.id}>
-                    <td>{ot.nombre}</td>
-                    <td>{ot.responsable}</td>
+                  <tr key={ot.id_ot}>
+                    <td>{ot.codigo}</td>
+                    <td>{ot.titulo}</td>
+                    <td>{ot.responsable_nombre}</td>
                     <td>{ot.estado}</td>
                     <td>
                       <Link className="btn-ver" to={`/detalle/${ot.id}`}>
