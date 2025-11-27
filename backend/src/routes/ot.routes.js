@@ -18,7 +18,6 @@ router.post("/", async (req, res) => {
       responsable_id,
     } = req.body;
 
-    // Generar un código nuevo por cada OT
     const codigo = generarCodigoOT();
 
     const result = await pool.query(
@@ -43,19 +42,6 @@ router.post("/", async (req, res) => {
 });
 
 /* ============================
-      OBTENER TODAS LAS OT
-=============================== */
-router.get("/", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM ot ORDER BY id_ot DESC");
-    res.json(result.rows);
-  } catch (error) {
-    console.error("Error al obtener las OT:", error);
-    res.status(500).json({ error: "Error al obtener las OT" });
-  }
-});
-
-/* ============================
      LISTAR OT POR USUARIO
 =============================== */
 router.get("/usuario/:id", async (req, res) => {
@@ -71,6 +57,19 @@ router.get("/usuario/:id", async (req, res) => {
   } catch (error) {
     console.error("Error al obtener las OT del usuario:", error);
     res.status(500).json({ error: "Error al obtener las OT del usuario" });
+  }
+});
+
+/* ============================
+      OBTENER TODAS LAS OT
+=============================== */
+router.get("/", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM ot ORDER BY id_ot DESC");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error al obtener las OT:", error);
+    res.status(500).json({ error: "Error al obtener las OT" });
   }
 });
 
