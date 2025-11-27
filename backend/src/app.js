@@ -14,13 +14,6 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Servir el build del frontend
-app.use(express.static(path.join(__dirname, "frontend/dist")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend/dist/index.html"));
-  });
-
 app.use(cors());
 app.use(express.json());
 
@@ -28,6 +21,13 @@ app.use("/api/usuarios", usuariosRoutes);
 app.use("/api/ot", otRoutes);
 app.use("/api/comentarios", comentariosRoutes);
 app.use("/api/auditorias", auditoriasRoutes);
+
+// Servir el build del frontend
+app.use(express.static(path.join(__dirname, "frontend/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend/dist/index.html"));
+});
 
 const PORT = process.env.PORT || 4000;
 
