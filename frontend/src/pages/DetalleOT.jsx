@@ -10,6 +10,19 @@ export default function DetalleOT() {
   const ot = getOTById(id);
   const usuario = JSON.parse(localStorage.getItem("usuarioActual"));
 
+  // 👉 BASE URL del backend para OT
+  const API_URL = "http://localhost:3001/api/ot";
+
+  // 👉 Botón Exportar PDF
+  const handleExportPDF = () => {
+    window.open(`${API_URL}/${ot.id}/export/pdf`, "_blank");
+  };
+
+  // 👉 Botón Exportar CSV/Excel
+  const handleExportCSV = () => {
+    window.open(`${API_URL}/${ot.id}/export/csv`, "_blank");
+  };
+
   if (!ot) return <h2>OT no encontrada</h2>;
 
   return (
@@ -58,7 +71,6 @@ export default function DetalleOT() {
         
         <div className="detalle-main">
 
-          
           <div className="datos-box">
             <h3>Datos General</h3>
 
@@ -111,12 +123,27 @@ export default function DetalleOT() {
 
         
         <div className="botonera">
-          <button onClick={() => navigate(`/ModificarOT/${ot.id}`)}>Configurar OT</button>
-          <button>Agregar Recursos</button>
-          <button>Exportar PDF</button>
-          <button>Exportar CSV</button>
-          <button onClick={() => navigate('/listaOT/$usuario.id')}>inicio</button>
-          
+          <button onClick={() => navigate(`/ModificarOT/${ot.id}`)}>
+            Configurar OT
+          </button>
+
+          <button>
+            Agregar Recursos
+          </button>
+
+          {/* 🔹 Conectados al backend */}
+          <button onClick={handleExportPDF}>
+            Exportar PDF
+          </button>
+
+          <button onClick={handleExportCSV}>
+            Exportar CSV
+          </button>
+
+          {/* corregido el template string */}
+          <button onClick={() => navigate(`/listaOT/${usuario.id}`)}>
+            inicio
+          </button>
         </div>
 
         
