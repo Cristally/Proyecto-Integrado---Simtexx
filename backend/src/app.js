@@ -8,6 +8,7 @@ import comentariosRoutes from "./routes/comentarios.routes.js";
 import auditoriasRoutes from "./routes/auditorias.routes.js";
 import { fileURLToPath } from "url";
 import path from "path";
+import excelRoutes from "./routes/excel.routes.js"; //importacion de exportacion por excel 
 
 const app = express();
 // crear constante de conexion e importacion
@@ -21,6 +22,7 @@ app.use("/api/usuarios", usuariosRoutes);
 app.use("/api/ot", otRoutes);
 app.use("/api/comentarios", comentariosRoutes);
 app.use("/api/auditorias", auditoriasRoutes);
+app.use("/api/excel",excelRoutes) //exportar excel
 
 // Servir el build del frontend
 app.use(express.static(path.join(__dirname, "frontend/dist")));
@@ -42,3 +44,4 @@ pool.query("SELECT NOW()", (err, result) => {
     console.log("✅ Conexión a BD OK:", result.rows[0]);
   }
 });
+
