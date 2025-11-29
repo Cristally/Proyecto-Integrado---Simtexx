@@ -1,0 +1,3 @@
+PARA LA EXPORTACION DE EXCELS
+npm install exceljs
+LOCALHOST:4000/API/EXCEL/OT/:ID/EXPORT  ==>> ruta reemplazar :ID POR EL ID DE LA OT 
