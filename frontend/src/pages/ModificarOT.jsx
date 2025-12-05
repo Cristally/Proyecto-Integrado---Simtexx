@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { getOTById, updateOT, deleteOT } from "../services/otService";
+import { getOTById, updateOT, deleteOTBackend } from "../services/otService";
+import { getClientes, getMantenedores } from "../services/usuariosService";
 import { useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
@@ -10,94 +11,86 @@ export default function ModificarOT() {
   const navigate = useNavigate();
 
   const [errors, setErrors] = useState({});
+  const [clientes, setClientes] = useState([]);
+  const [responsables, setResponsables] = useState([]);
+  const [form, setForm] = useState([id]);
 
-  const [form, setForm] = useState({
-    nombre: "",
-    descripcion: "",
-    estado: "",
-    cliente: "",
-    responsable: "",
-    fechaInicio: "",
-    fechaFin: "",
-    estadoOT: true, // ⬅ NUEVO BOOLEANO
-  });
-
-  // Cargar datos existentes
   useEffect(() => {
-    const ot = getOTById(id);
-    if (ot) {
+    async function loadData() {
+      const data = await getOTById(id);
+      const c = await getClientes();
+      const r = await getMantenedores();
+
+      setClientes(c);
+      setResponsables(r);
+
       setForm({
-        nombre: ot.nombre,
-        descripcion: ot.descripcion,
-        estado: ot.estado,
-        cliente: ot.cliente,
-        responsable: ot.responsable,
-        fechaInicio: ot.fechaInicio,
-        fechaFin: ot.fechaFin,
-        estadoOT: ot.estadoOT ?? true, // ⬅ CARGA EL BOOLEANO
+        codigo:data.codigo || "",
+        titulo: data.titulo || "",
+        descripcion: data.descripcion || "",
+        estado: data.estado || "",
+        cliente_id: data.cliente_id || "",
+        responsable_id: data.responsable_id || "",
+        fecha_inicio_contrato: data.fecha_inicio_contrato?.split("T")[0] || "",
+        fecha_fin_contrato: data.fecha_fin_contrato?.split("T")[0] || "",
+        activo: data.activo
       });
     }
+    loadData();
   }, [id]);
 
-  // Validaciones
-  const validateForm = () => {
-    const newErrors = {};
-    if (!form.nombre.trim()) newErrors.nombre = "El nombre es obligatorio";
-    if (!form.descripcion.trim()) newErrors.descripcion = "La descripción es obligatoria";
-    if (!form.estado) newErrors.estado = "Debe seleccionar un estado";
-    if (!form.cliente.trim()) newErrors.cliente = "Debe ingresar cliente";
-    if (!form.responsable.trim()) newErrors.responsable = "Debe ingresar responsable";
-    if (!form.fechaInicio) newErrors.fechaInicio = "Debe ingresar fecha de inicio";
-    if (!form.fechaFin) newErrors.fechaFin = "Debe ingresar fecha finalización";
-    return newErrors;
+  if (!form) return <h2 style={{ color: "white" }}>Cargando OT...</h2>;
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  }
+  async function handleSubmit(e) {
+  e.preventDefault();
 
-  function handleSubmit(e) {
-    e.preventDefault();
+  try {
+    await updateOT(id, {
+      titulo: form.titulo,
+      descripcion: form.descripcion,
+      estado: form.estado,
+      cliente_id: form.cliente_id,
+      responsable_id: form.responsable_id,
+      fecha_inicio_contrato: form.fecha_inicio_contrato,
+      fecha_fin_contrato: form.fecha_fin_contrato,
+      activo: form.activo
+    });
 
-    const validation = validateForm();
-    if (Object.keys(validation).length > 0) {
-      setErrors(validation);
-      return;
-    }
-
-    updateOT(id, form);
-    alert("OT modificada exitosamente");
+    alert("OT modificada exitosamente ✔");
     navigate(`/detalle/${id}`);
+
+  } catch (error) {
+    console.error("❌ Error al modificar la OT:", error);
+    alert("Hubo un error al intentar modificar la OT");
   }
+}
 
-  function handleDelete() {
-    const seguro = window.confirm("¿Seguro que quieres eliminar esta OT?");
-    if (!seguro) return;
-
-    deleteOT(id);
-    alert("OT eliminada correctamente");
-
-    navigate("/Listaot");
-  }
+  const handleDelete = async () => {
+    if (!window.confirm("¿Eliminar OT?")) return;
+    await deleteOTBackend(id);
+    alert("OT Eliminada");
+    navigate("/dashboard");
+  };
 
   return (
     <>
       <NavBar />
-
       <div className="modal-container">
         <div className="modal-box">
+          <h2>Configuración de OT </h2>
+          <h3>Codigo: {form.codigo}</h3>
 
-          <h2 className="titulo">Configuración de OT</h2>
-
-          <form onSubmit={handleSubmit} className="form-box">
+          <form className="form-box" onSubmit={handleSubmit}>
 
             <label>Título</label>
-            <input name="nombre" value={form.nombre} onChange={handleChange} />
-            {errors.nombre && <p className="error">{errors.nombre}</p>}
+            <input name="titulo" value={form.titulo} onChange={handleChange} />
 
             <label>Descripción</label>
             <textarea name="descripcion" value={form.descripcion} onChange={handleChange} />
-            {errors.descripcion && <p className="error">{errors.descripcion}</p>}
 
             <label>Estado</label>
             <select name="estado" value={form.estado} onChange={handleChange}>
@@ -106,64 +99,60 @@ export default function ModificarOT() {
               <option value="En Proceso">En Proceso</option>
               <option value="Finalizada">Finalizada</option>
             </select>
-            {errors.estado && <p className="error">{errors.estado}</p>}
 
             <label>Cliente</label>
-            <input name="cliente" value={form.cliente} onChange={handleChange} />
-            {errors.cliente && <p className="error">{errors.cliente}</p>}
+            <select
+              name="cliente_id"
+              value={form.cliente_id}
+              onChange={handleChange}
+            >
+              <option value="">Seleccionar</option>
+              {clientes.map(c => (
+                <option key={c.id_usuarios} value={c.id_usuarios}>
+                  {c.nombre}
+                </option>
+              ))}
+            </select>
 
             <label>Responsable</label>
-            <input name="responsable" value={form.responsable} onChange={handleChange} />
-            {errors.responsable && <p className="error">{errors.responsable}</p>}
+            <select
+              name="responsable_id"
+              value={form.responsable_id}
+              onChange={handleChange}
+            >
+              <option value="">Seleccionar</option>
+              {responsables.map(r => (
+                <option key={r.id_usuarios} value={r.id_usuarios}>
+                  {r.nombre}
+                </option>
+              ))}
+            </select>
 
-            <label>Fecha finalización de contrato</label>
-            <input type="date" name="fechaFin" value={form.fechaFin} onChange={handleChange} />
-            {errors.fechaFin && <p className="error">{errors.fechaFin}</p>}
+            <label>Fecha inicio contrato</label>
+            <input type="date" name="fecha_inicio_contrato" value={form.fecha_inicio_contrato} onChange={handleChange} />
 
-            {/* NUEVO INPUT RADIO BOOLEANO */}
-            <label>Estado OT (Activa / Inactiva)</label>
+            <label>Fecha fin contrato</label>
+            <input type="date" name="fecha_fin_contrato" value={form.fecha_fin_contrato} onChange={handleChange} />
 
+            <label>Estado OT</label>
             <div className="radio-group">
               <label>
-                <input
-                  type="radio"
-                  name="estadoOT"
-                  value="true"
-                  checked={form.estadoOT === true}
-                  onChange={() => setForm({ ...form, estadoOT: true })}
-                />
+                <input type="radio" name="activo" checked={form.activo === true} onChange={() => setForm({...form, activo: true})}/>
                 Activa
               </label>
 
               <label>
-                <input
-                  type="radio"
-                  name="estadoOT"
-                  value="false"
-                  checked={form.estadoOT === false}
-                  onChange={() => setForm({ ...form, estadoOT: false })}
-                />
+                <input type="radio" name="activo" checked={form.activo === false} onChange={() => setForm({...form, activo: false})}/>
                 Inactiva
               </label>
             </div>
 
             <div className="btn-row">
-              <button type="button" className="btn-eliminar" onClick={handleDelete}>
-                Eliminar
-              </button>
-
-              <button type="submit" className="btn-guardar">
-                Guardar
-              </button>
+              <button type="button" className="btn-eliminar" onClick={handleDelete}>Eliminar</button>
+              <button type="submit" className="btn-guardar">Guardar</button>
             </div>
 
-            <button
-              type="button"
-              className="btn-cancelar"
-              onClick={() => navigate(-1)}
-            >
-              Cancelar
-            </button>
+            <button type="button" className="btn-cancelar" onClick={() => navigate(-1)}>Cancelar</button>
 
           </form>
         </div>
@@ -173,4 +162,3 @@ export default function ModificarOT() {
     </>
   );
 }
-

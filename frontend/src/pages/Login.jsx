@@ -40,7 +40,7 @@ export default function Login() {
       localStorage.setItem("usuarioActual", JSON.stringify(user));
 
       // navegación misma que ya tenías
-      navigate(`/dashboard/${user.id}`);
+      navigate(`/dashboard`);
 
     } catch (error) {
       console.error(error);

@@ -29,6 +29,7 @@ estado VARCHAR(50) NOT NULL,
 fecha_inicio_contrato DATE,
 fecha_fin_contrato DATE,
 responsable_id INT REFERENCES usuarios(id_usuarios),
+cliente_id INT REFERENCES usuarios(id_usuarios),
 activo BOOLEAN DEFAULT TRUE,
 fecha_creacion TIMESTAMP DEFAULT NOW(),
 fecha_actualizacion TIMESTAMP DEFAULT NOW()

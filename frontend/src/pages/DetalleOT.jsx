@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { getOTById } from "../services/otService";
 import Footer from "../components/Footer";
 import NavBar from "../components/NavBar";
@@ -7,20 +8,28 @@ import "./DetalleOT.css";
 export default function DetalleOT() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const ot = getOTById(id);
-  const usuario = JSON.parse(localStorage.getItem("usuarioActual"));
+  const [ot, setOt] = useState(null);
 
-  // 👉 BASE URL del backend para OT
-  const API_URL = "http://localhost:3001/api/ot";
+  useEffect(() => {
+    async function loadOT() {
+      const data = await getOTById(id);
+      setOt(data);
+    }
+    loadOT();
+  }, [id]);
 
-  // 👉 Botón Exportar PDF
+  if (!ot) return <h2>Cargando OT...</h2>;
+  // BASE URL del backend para OT
+  const API_URL = "http://localhost:4000/api";
+
+  //Botón Exportar PDF
   const handleExportPDF = () => {
-    window.open(`${API_URL}/${ot.id}/export/pdf`, "_blank");
+    window.open(`${API_URL}/pdf/ot/${ot.id_ot}/export`, "_blank");
   };
 
-  // 👉 Botón Exportar CSV/Excel
+  //Botón Exportar CSV/Excel
   const handleExportCSV = () => {
-    window.open(`${API_URL}/${ot.id}/export/csv`, "_blank");
+    window.open(`${API_URL}/ot/${ot.id_ot}/export/csv`, "_blank");
   };
 
   if (!ot) return <h2>OT no encontrada</h2>;
@@ -38,12 +47,12 @@ export default function DetalleOT() {
 
           <div className="detalle-item">
             <label>Código:</label>
-            <span>{ot.id}</span>
+            <span>{ot.codigo}</span>
           </div>
 
           <div className="detalle-item">
             <label>Nombre:</label>
-            <span>{ot.nombre}</span>
+            <span>{ot.titulo}</span>
           </div>
 
           <div className="detalle-item">
@@ -53,17 +62,17 @@ export default function DetalleOT() {
 
           <div className="detalle-item">
             <label>Fecha:</label>
-            <span>{ot.fechaInicio}</span>
+            <span>{ot.fecha_inicio_contrato}</span>
           </div>
 
           <div className="detalle-item">
             <label>Cliente:</label>
-            <span>{ot.cliente}</span>
+            <span>{ot.cliente_nombre}</span>
           </div>
 
           <div className="detalle-item">
             <label>Responsable:</label>
-            <span>{ot.responsable}</span>
+            <span>{ot.responsable_nombre}</span>
           </div>
 
         </div>
@@ -82,12 +91,12 @@ export default function DetalleOT() {
 
               <div>
                 <label>F. Inicio:</label>
-                <p>{ot.fechaInicio}</p>
+                <p>{ot.fecha_inicio_contrato}</p>
               </div>
 
               <div>
                 <label>F. Estimada Fin:</label>
-                <p>{ot.fechaFin}</p>
+                <p>{ot.fecha_fin_contrato}</p>
               </div>
 
               <div>
@@ -104,7 +113,7 @@ export default function DetalleOT() {
             <div className="recursos-grid">
               <div className="rcard">
                 <span>Imágenes</span>
-                <b>{ot.imagenes.length}</b>
+                {/** <b>{ot.imagenes.length}</b>*/}
               </div>
 
               <div className="rcard">
@@ -123,7 +132,7 @@ export default function DetalleOT() {
 
         
         <div className="botonera">
-          <button onClick={() => navigate(`/ModificarOT/${ot.id}`)}>
+          <button onClick={() => navigate(`/ModificarOT/${ot.id_ot}`)}>
             Configurar OT
           </button>
 
@@ -140,8 +149,8 @@ export default function DetalleOT() {
             Exportar CSV
           </button>
 
-          {/* corregido el template string */}
-          <button onClick={() => navigate(`/listaOT/${usuario.id}`)}>
+          
+          <button onClick={() => navigate(`/dashboard`)}>
             inicio
           </button>
         </div>
@@ -159,7 +168,7 @@ export default function DetalleOT() {
               </tr>
             </thead>
 
-            <tbody>
+            {/** <tbody>
               {ot.historial.map((h, i) => (
                 <tr key={i}>
                   <td>{h.fecha}</td>
@@ -167,7 +176,7 @@ export default function DetalleOT() {
                   <td>{ot.responsable}</td>
                 </tr>
               ))}
-            </tbody>
+            </tbody>*/}
           </table>
         </div>
 
@@ -175,13 +184,13 @@ export default function DetalleOT() {
         <div className="comentarios-box">
           <h3>Comentarios</h3>
 
-          <ul>
+          {/** <ul>
             {ot.comentarios.map((c, i) => (
               <li key={i}>
                 <b>{c.autor}:</b> {c.texto}
               </li>
             ))}
-          </ul>
+          </ul>*/}
 
           <button className="btn-add">+</button>
         </div>

@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import "./Dashboard.css"
 import { getOTs } from "../services/otService";
 import { Link, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 const Dashboard = () => {
   const [ots, setOts] = useState([]);
 
@@ -33,7 +34,7 @@ const Dashboard = () => {
   <h1 className="title">Simtexx Inicio</h1>
 
   <div className="subtittle">
-    Usuario: <b>{usuario?.nombre}</b> &nbsp;&nbsp; Rol: <b>{usuario?.rol_nobmre}</b>
+    Usuario: <b>{usuario?.nombre}</b> &nbsp;&nbsp; Rol: <b>{usuario?.rol_nombre}</b>
   </div>
 
   <div className="cardContainer">

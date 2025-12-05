@@ -1,95 +1,121 @@
-
+/* CONTENEDOR GENERAL */
 .container-crearot {
+  min-height: calc(100vh - 80px - 60px); /* Altura visible menos NavBar y Footer */
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-
-  margin-top: 30px;
+  justify-content: flex-start;
+  padding-top: 20px;
+  padding-bottom: 40px;
 }
 
-
+/* TITULOS */
 .container-crearot h2 {
-  font-size: 32px;
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-size: 34px;
+  font-weight: 800;
+  margin-bottom: 2px;
   color: #222;
 }
 
 .container-crearot h4 {
-  font-size: 18px;
-  color: #444;
+  font-size: 20px;
+  color: #555;
   margin-bottom: 20px;
 }
 
-
+/* FORMULARIO */
 .form-box {
-  background: rgba(255, 255, 255, 0.95);
-  width: 380px;
-  padding: 25px;
+  background: #ffffff;
+  width: min(90%, 450px); /* Responsive */
+  padding: 28px;
   border-radius: 20px;
+  box-shadow: 0px 8px 20px rgba(0,0,0,0.20);
 
-  box-shadow: 0px 8px 20px rgba(0,0,0,0.25);
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 18px;
+
+  overflow: visible;
 }
 
 
+/* INPUTS */
 .form-box input,
 .form-box textarea,
 .form-box select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-
-  border: 1px solid #c2c2c2; 
-  background: #ffffff;
-
-  font-size: 14px;
-  outline: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  border: 1px solid #c6c6c6;
+  background: #fafafa;
+  transition: .2s;
+  
 }
 
+.form-box input:focus,
+.form-box textarea:focus,
+.form-box select:focus {
+  border-color: #a81e1e;
+  box-shadow: 0 0 4px rgba(198,40,40,0.4);
+}
+
+/* TEXTAREA */
 textarea {
-  height: 80px;
+  min-height: 90px;
+  resize: vertical;
 }
 
+/* LABEL GENERAL */
 .form-box label {
+  font-size: 15px;
   font-weight: bold;
+  color: #333;
   text-align: left;
 }
 
-
+/* BOTONES */
 .btn-rojo {
-  background-color: #c62828;
+  background-color: #d62828;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 10px;
+  padding: 10px;
   font-size: 16px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  font-weight: bold;
+  transition: 0.2s;
 }
 
 .btn-rojo:hover {
   background-color: #b71c1c;
+  transform: translateY(-1px);
 }
 
 .btn-cancelar {
-  background-color: #444;
-  color: #fff;
-  border-radius: 8px;
+  background-color: #555;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
   padding: 12px;
+  font-size: 16px;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 .btn-cancelar:hover {
   background-color: #333;
 }
+
+/* ERRORES */
 .error {
-  color: #c62828;
+  color: #d62828;
   font-size: 13px;
-  margin-top: -10px;
-  margin-bottom: 5px;
+  font-weight: 600;
+  margin-top: -12px;
   text-align: left;
+}
+
+/* FOOTER PEGADO ABAJO */
+footer {
+  margin-top: auto;
 }

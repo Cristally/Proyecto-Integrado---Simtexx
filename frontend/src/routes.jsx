@@ -15,7 +15,7 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard/:id" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/CrearOT/:id" element={<CrearOT />} />
         <Route path="/ListaOT/:id" element={<ListaOT />} />
         <Route path="/detalle/:id" element={<DetalleOT />} />

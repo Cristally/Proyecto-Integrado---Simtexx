@@ -1,4 +1,4 @@
-import { getOTs, deleteOT, deleteOTBackend } from "../services/otService"; 
+import { getOTs, deleteOTBackend, exportCSV, exportPDF } from "../services/otService"; 
 import { Link, useParams} from "react-router-dom";
 import { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
@@ -6,31 +6,70 @@ import Footer from "../components/Footer";
 import "./ListaOT.css";
 
 export default function ListaOT() {
+  //CARGAR OTS //
   const [ots, setOts] = useState([]);
 
   useEffect(() => {
-    setOts(getOTs());
-  }, []);
+      async function cargarOTs() {
+        const data = await getOTs(); // ahora obtiene desde backend
+        setOts(data);
+      }
+      cargarOTs();
+    }, []);
+
+
+  //ID DE BUSQUEDA USUARIO //
   const { id } = useParams();
   const usuario = JSON.parse(localStorage.getItem("usuarioActual")); //usuario
-
  
-  const handleDelete = async (idOT) => {
-    if (window.confirm("¿Estás seguro de que deseas eliminar esta OT?")) {
-      
-      if (typeof deleteOTBackend === 'function') {
-          try {
-            await deleteOTBackend(idOT); 
-          } catch (error) {
-            console.error("Error en backend, continuando localmente...");
-          }
-      }
+ 
+  // FUNCION DE SEARCH Y FILTRO //
+  const [search, setSearch] = useState("");
+  const [estadoFiltro, setEstadoFiltro] = useState("Todos");
+  const [filteredOTs, setFilteredOTs] = useState([]);
 
-      deleteOT(idOT);
-      setOts(getOTs());
-      alert("OT eliminada correctamente");
+  useEffect(() => {
+    filtrarOTs();
+  }, [ots, search, estadoFiltro]);
+
+  const filtrarOTs = () => {
+    
+    let data = ots;
+    
+                                
+    if (search.trim() !== "") {      // Buscar por Código o Cliente
+      const buscar = search.toLowerCase();
+      data = data.filter(
+        (ot) =>
+          ot.codigo.toLowerCase().includes(buscar) ||
+          ot.cliente_nombre.toLowerCase().includes(buscar)
+      );
+    }
+    
+    if (estadoFiltro !== "Todos") {    // Filtrar por Estado
+      data = data.filter((ot) => ot.estado === estadoFiltro);
+    }
+
+    setFilteredOTs(data);
+  };
+
+  
+  //DELETE BTN // 
+  const handleDelete = async (idOT) => {
+  if (window.confirm("¿Estás seguro de eliminar esta OT?")) {
+
+      try {
+        await deleteOTBackend(idOT);
+        const data = await getOTs(); // recarga desde la base de datos
+        setOts(data);
+        alert("OT eliminada correctamente");
+      } catch (error) {
+        console.error("Error al eliminar OT:", error);
+        alert("No se pudo eliminar la OT");
+      }
     }
   };
+
  
 
   return (
@@ -49,9 +88,9 @@ export default function ListaOT() {
         
         <div className="btn-bar">
           <Link to="/crearot/${usuario?.id}" className="btn-opcion">Crear OT</Link>
-          <button className="btn-opcion">Exportar PDF</button>
-          <button className="btn-opcion">Exportar CSV</button>
-          <Link to="/dashboard/${usuario?.id}" className="btn-opcion">inicio</Link>
+          <button className="btn-opcion" onClick={exportPDF} >Exportar PDF</button>
+          <button className="btn-opcion"onClick={exportCSV}>Exportar CSV</button>
+          <Link to="/dashboard" className="btn-opcion">inicio</Link>
           
           
         </div>
@@ -66,9 +105,13 @@ export default function ListaOT() {
                 className="input-buscar"
                 type="text"
                 placeholder="Nombre Cliente / Código"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
 
-              <select className="input-filtro">
+              <select className="input-filtro"
+              value={estadoFiltro}
+              onChange={(e) =>setEstadoFiltro(e.target.value)}>
                 <option>Todos</option>
                 <option>Pendiente</option>
                 <option>En Proceso</option>
@@ -79,26 +122,31 @@ export default function ListaOT() {
             <table className="tabla">
               <thead>
                 <tr>
+                  <th>Codigo</th>
+                  <th>Cliente</th>
                   <th>Nombre</th>
                   <th>Responsable</th>
                   <th>Estado</th>
+                  <th>Ultima Actualizacion</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
 
               <tbody>
-                {ots.map((ot) => (
+                {filteredOTs.map((ot) => (
                   <tr key={ot.id_ot}>
                     <td>{ot.codigo}</td>
+                    <td>{ot.cliente_nombre}</td>
                     <td>{ot.titulo}</td>
                     <td>{ot.responsable_nombre}</td>
                     <td>{ot.estado}</td>
-                    <td>
-                      <Link className="btn-ver" to={`/detalle/${ot.id}`}>
+                    <td>{ot.fecha_actualizacion?.split("T")[0]}</td>
+                    <td className="acciones-ot">
+                      <Link className="btn-ver" to={`/detalle/${ot.id_ot}`}>
                         Ver
                       </Link>
                       <button 
-                        onClick={() => handleDelete(ot.id)} 
+                        onClick={() => handleDelete(ot.id_ot)} 
                         className="btn-eliminar"
                       >
                         Eliminar
